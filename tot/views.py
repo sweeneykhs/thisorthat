@@ -26,8 +26,6 @@ from .forms import InputForm, newSearchForm, theme_test
 # translator = google_translator() 
 
 from collections import Counter
-from tkinter import * 
-import tkinter as tk
 import requests
 from io import BytesIO
 import statistics
