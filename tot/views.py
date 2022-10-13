@@ -250,6 +250,7 @@ def search_flow(request, pk, *args, **kwargs):
 def NewSearch(request):
     # model = search_history
     form_class = newSearchForm()
+    df, cats=set_up (request, clothes)
 
     if request.method=='POST':
         form_class= newSearchForm(request.POST)
@@ -258,7 +259,7 @@ def NewSearch(request):
         context={'pk':search_history.search_id}
         return redirect('pls', search_history.search_id)
 
-    context={'form':form_class}
+    context={'form':form_class, 'cats':cats}
     return render(request, 'new_search.html', context)
 
 # def index(request):

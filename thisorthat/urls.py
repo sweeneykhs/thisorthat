@@ -20,7 +20,7 @@ from tot import views
 
 urlpatterns = [ 
    path('admin/', admin.site.urls),
-    path('', views.table, name='table'),
+    path('', views.NewSearch, name='new'),
     path('pls/<str:pk>', views.make_search, name='pls'),
     path('search/<str:pk>', views.search_flow, name='search'),
     path('new/', views.NewSearch, name='new'),

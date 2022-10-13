@@ -31,9 +31,9 @@ specifics_=['Womens']
 class newSearchForm(forms.ModelForm):
     class Meta:
         model = search_history
-        fields = ('theme','spec', 'category')
+        fields = ('category',)
         # exclude=('arguments',)
-        theme = forms.ModelChoiceField(label="theme", queryset=clothes.objects.all().values())
+        # theme = forms.ModelChoiceField(label="theme", queryset=clothes.objects.all().values())
     #     theme=forms.CharField(widget=forms.Select(choices=theme_))
     #     specifics=forms.CharField(widget=forms.Select(choices=specifics_))
     #     name=forms.CharField(widget=forms.Select(choices=name_))

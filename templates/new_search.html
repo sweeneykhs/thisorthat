@@ -7,6 +7,10 @@
     <table>
         {{ form.as_table }}
     </table>
+    <h3>Options</h3>
+    {% for i in cats %}
+    {{i}}<br />
+    {% endfor %}
     <input type="submit" value="Submit">
   </form>
 {% endblock %}
