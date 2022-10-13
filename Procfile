@@ -1,1 +1,1 @@
-web: gunicorn tastediscovery.wsgi --log-file -
+web: gunicorn thisorthat.wsgi --log-file -
