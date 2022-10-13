@@ -1,5 +1,5 @@
 from secrets import choice
-from tkinter import CASCADE
+
 from unicodedata import category
 from django.db import models
 import pandas as pd
