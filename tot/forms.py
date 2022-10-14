@@ -29,9 +29,13 @@ specifics_=['Womens']
 # name_=list(set(clothes.subcategory_eng))
 
 class newSearchForm(forms.ModelForm):
+    iquery=clothes.objects.values_list("subcategory_eng", flat=True).distinct()
+    iquery_choices=[('', 'None')] + [(id, id) for id in iquery]
+    category=forms.ChoiceField(choices=iquery_choices,required=False, widget=forms.Select())
     class Meta:
         model = search_history
         fields = ('category',)
+        
         # exclude=('arguments',)
         # theme = forms.ModelChoiceField(label="theme", queryset=clothes.objects.all().values())
     #     theme=forms.CharField(widget=forms.Select(choices=theme_))

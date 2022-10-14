@@ -13,51 +13,11 @@
   
 <div class="container">
   <h2 class="text-center"><u>{{cat}}</u></h2><br>            
-  <!-- <table class="table table-dark table-striped">
-    <thead>
-      <tr>
-        <th>Option 1</th>
-        <th>Option 2</th>
-      </tr>
-    </thead>
-    <tbody>
-    jinja2 Technique
-    {% for i in d %}
-     <tr>
-      <td>He,p<button type='button'> <img src='{{d1}}' alt="pic" height ="80" width="100" /></button></td>
-       <td><button type='button'> <img src='{{d2}}' alt="pic" height ="80" width="100" /></button></td> -->
-    <!-- </tr> -->
-    <!-- {% endfor %} -->
-    <!-- </tbody> -->
-    
-  <!-- </table> -->
-  <!-- <button type='button'><img src='{{d1}}' alt="pic" height ="80" width="100" /></button> -->
- <!-- <button type='button'> <img src='{{d2}}' alt="pic" height ="80" width="100" /></button> -->
- 
- <!-- <button id="Option 1" class="float-left submit-button"  value=1><img src='{{d1}}' alt="pic" height ="80" width="100" /></button>
-
- <script type="text/javascript">
-     document.getElementById("Option 1").onclick = function () {
-         location.href = "";
-     };
- </script>
-<button id="Option 2" class="float-left submit-button" value=2 ><img src='{{d2}}' alt="pic" height ="80" width="100" /></button>
-
-  <script type="text/javascript">
-      document.getElementById("Option 2").onclick = function () {
-          location.href = "";
-      };
-  </script> -->
-<!-- <img src='{{d1}}' alt="pic"  />
-<img src='{{d2}}' alt="pic" /> -->
 
 <form method = "POST">
-  {{pk}}
-  {{df}}
+  <!-- {{df}} -->
   {% csrf_token %}
-  <!-- {{form}} -->
-  <!-- <input type="image" src='{{d1}}'  name="Option 1" value="This" />
-  <input type="image" src='{{d2}}'  name="Option 2" value="That" /> -->
+
   <button type="submit" name="This" value="Option 1"><img src={{d1}} alt="This"></button>
   <button type="submit" name="That" value="Option 2"><img src={{d2}} alt="That"></button>
 </form>
@@ -68,10 +28,6 @@
   {{j}}
   {% endfor %}
 
-  <!-- <ul id="buttons">
-    <li><a href="#">HOME</a></li>
-    <li><a href="#">ABOUT</a></li>
-  </ul> -->
 </div>
   
 </body>

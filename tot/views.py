@@ -254,10 +254,13 @@ def NewSearch(request):
 
     if request.method=='POST':
         form_class= newSearchForm(request.POST)
-        search_history=form_class.save(commit=False)
-        search_history.save()
-        context={'pk':search_history.search_id}
-        return redirect('pls', search_history.search_id)
+        # category = request.POST.get('category')
+        # form_class.fields['category'].choices = [(category, category)]
+        if form_class.is_valid():
+            search_history=form_class.save(commit=False)
+            search_history.save()
+            context={'pk':search_history.search_id}
+            return redirect('pls', search_history.search_id)
 
     context={'form':form_class, 'cats':cats}
     return render(request, 'new_search.html', context)
