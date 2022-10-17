@@ -137,17 +137,33 @@ def make_choice(request, options, user_input, search_df):
     print(pos_words)
     print(neg_words)
     search_df.loc[search_df.shape[0]] = [None]*len(search_df.columns)
+    max_score=0
+    max_limit=100000
+    row = len(search_df)-1
 #         print(search_df)
     for j in search_df.columns:
 #             print(j)
-        row = len(search_df)-1
         if j in pos_words:
-            search_df[j][row]=pow(search_df[j][row-1],2)
+            if search_df[j][row-1]>1:
+                search_df[j][row]=pow(search_df[j][row-1],2)
+            else:
+                search_df[j][row]=search_df[j][row-1]*2
 #             print('yes')
         elif j in neg_words:
-            search_df[j][row]=pow(search_df[j][row-1], 0.5)
+            if search_df[j][row-1]>1:
+                search_df[j][row]=pow(search_df[j][row-1], 0.5)
+            else:
+                search_df[j][row]=search_df[j][row-1]/2
         else:
             search_df[j][row]=pow(search_df[j][row-1], 1)
+        total_score=total_score+search_df[j][row]
+        if search_df[j][row]>max_score:
+            max_score=search_df[j][row]
+    if max_score>max_limit:
+        for j in search_df.columns:
+            search_df[j][row]=search_df[j][row]/max_limit
+    for j in search_df.columns:
+        search_df[j][row]=search_df[j][row]/total_score
 
 #     print(search_df)
     return(search_df)
