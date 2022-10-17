@@ -156,14 +156,14 @@ def make_choice(request, options, user_input, search_df):
                 search_df[j][row]=search_df[j][row-1]/2
         else:
             search_df[j][row]=pow(search_df[j][row-1], 1)
-        total_score=total_score+search_df[j][row]
+        # total_score=total_score+search_df[j][row]
         if search_df[j][row]>max_score:
             max_score=search_df[j][row]
     if max_score>max_limit:
         for j in search_df.columns:
             search_df[j][row]=search_df[j][row]/max_limit
     for j in search_df.columns:
-        search_df[j][row]=search_df[j][row]/total_score
+        search_df[j][row]=search_df[j][row]/max_limit
 
 #     print(search_df)
     return(search_df)
