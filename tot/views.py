@@ -109,8 +109,8 @@ def generate_options(request, cat,search_df,df):
     options=temp_df.loc[options_index]
 #     print(options)
     temp=[]
+    temp2=[]
     for i in options.image_url:
-        print(i)
         try:
             # headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
             # response = requests.get(str(i), headers=headers)
@@ -120,8 +120,19 @@ def generate_options(request, cat,search_df,df):
             temp.append(i)
         except:
             pass
+    for i in options.product_url:
+        try:
+            # headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+            # response = requests.get(str(i), headers=headers)
+            # img = Image.open(BytesIO(response.content))
+            # img        
+            # temp.append(img)
+            # print(i)
+            temp2.append(i)
+        except:
+            pass
 
-    return temp, options
+    return temp, options, temp2
         
         
 #     print(search_df)
@@ -169,8 +180,7 @@ def make_choice(request, options, user_input, search_df):
     return(search_df)
 
 def make_search(request, pk,  *args, **kwargs):
-    # df=pd.DataFrame(list(clothes.objects.all().values()))
-    # df=set_up(request)[0]
+
     pk=pk
     df, category_list=set_up(request, clothes)
     search_all_info=search_history.objects.get(search_id=pk)
@@ -178,23 +188,10 @@ def make_search(request, pk,  *args, **kwargs):
     cat_descr=make_descr(request, category_list, df)
 
     history=explore_init(request, cat, cat_descr)
-    # try:
-    #     user_input=userChoice.choice
-    #     print(user_input)
-    # except:
-    #     user_input=1
-   
 
-    ims, options =generate_options(request, cat, history, df)
-    # form = userChoice(request.POST)
-    # if form.is_valid():
-    #     form.save()
-    # while counter<10: 
-    #     ims, options =generate_options(request, cat, history, df)
-    # #     print(ims[0])
-    # #     for im in ims:
-    # #         im
-    #     user_input=int(input('Do you prefer 1 or 2?'))
+
+    ims, options, urls =generate_options(request, cat, history, df)
+    # print(urls)
     
 
 
@@ -225,6 +222,7 @@ def make_search(request, pk,  *args, **kwargs):
         search_all_info.choice=user_input
         search_all_info.options=options
         search_all_info.saved_for_later.append(ims[0])
+        search_all_info.saved_for_later_urls.append(urls[0])
         search_all_info.save()
         return redirect('search', pk)
     elif 'saveThat' in request.POST:
@@ -232,6 +230,7 @@ def make_search(request, pk,  *args, **kwargs):
         search_all_info.choice=user_input
         search_all_info.options=options
         search_all_info.saved_for_later.append(ims[1])
+        search_all_info.saved_for_later_urls.append(urls[1])
         search_all_info.save()
         return redirect('search', pk)
     return render(request, 'search1.html', context)
@@ -249,11 +248,12 @@ def search_flow(request, pk, *args, **kwargs):
     df, category_list=set_up(request, clothes)
     cat=search_all_info.category
     cat_descr=make_descr(request, category_list, df)
-    ims, options =generate_options(request, cat, history, df)
+    ims, options, urls =generate_options(request, cat, history, df)
+    # print(urls)
     search_all_info.arguments=history
     search_all_info.save()
     search_df=search_all_info.arguments
-   
+    # print(search_all_info.saved_for_later_urls)
     # scores=search_df.iloc[: , 1:]Flanker27
     # scores=pd.to_numeric(scores[:,:])
     # best=scores.idxmax()
@@ -262,7 +262,9 @@ def search_flow(request, pk, *args, **kwargs):
     # print(options.image_url[0])
     if 'saved_items' in request.POST:
         saves=search_all_info.saved_for_later
-        context={'pk': pk, 'saves': saves}
+        saves_url=search_all_info.saved_for_later_urls
+
+        context={'pk': pk, 'saves': saves,'saves_url': saves_url}
         return render(request, 'saved_items.html', context)
     else:
         if 'Option 1' in request.POST:
@@ -280,12 +282,14 @@ def search_flow(request, pk, *args, **kwargs):
             search_all_info.choice=user_input
             search_all_info.options=options
             search_all_info.saved_for_later.append(ims[0])
+            search_all_info.saved_for_later_urls.append(urls[0])
             search_all_info.save()
         elif 'saveThat' in request.POST:
             user_input=2
             search_all_info.choice=user_input
             search_all_info.options=options
             search_all_info.saved_for_later.append(ims[1])
+            search_all_info.saved_for_later_urls.append(urls[1])
             search_all_info.save()
         # print(search_all_info.saved_for_later)
         return render(request, 'table2.html', context)

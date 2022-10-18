@@ -22,6 +22,7 @@ class clothes(models.Model):
     subcategory_eng=models.CharField(("subcategory_eng"), max_length=2000)
     theme=models.CharField(("theme"), max_length=2000, null=True)
     spec=models.CharField(("spec"), max_length=2000, null=True)
+    product_url=models.CharField(("product_url"), max_length=2000, null=True)
 
 class userChoice(models.Model):
     choice=models.IntegerField()
@@ -45,6 +46,7 @@ class search_history(models.Model):
     choice=models.IntegerField(null=True)
     options=PickledObjectField(null=True)
     saved_for_later=ArrayField(models.CharField(max_length=300, blank=True),size=10, default=list, null=True)
+    saved_for_later_urls=ArrayField(models.CharField(max_length=300, blank=True),size=10, default=list, null=True)
     # id = models.BigIntegerField(primary_key=True)
     search_id = models.UUIDField( default=uuid.uuid4, editable=False, primary_key=True)
     def __str__(self):

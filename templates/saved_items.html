@@ -11,16 +11,21 @@
 </head>
 <body>
   
-<div class="container">
-  <h2 class="text-center"><u>{{cat}}</u></h2><br>    
-  
+<class="container">
+  <h2 class="text-center"><u>{{cat}}</u></h2><br>      
 {% for item in saves %}
 <img src={{item}}>
 
 {% endfor %}
+
+{% for item in saves_url %}
+{{item}}
+
+
+{% endfor %}
 <!-- <form method = "POST">
   <!-- {{df}} -->
-  {% csrf_token %}
+
 
   <!-- <button type="submit" name="This" value="Option 1"><img src={{d1}} alt="This"></button>
   <button type="submit" name="saveThis" value="Option 1">Save This for Later</button>
