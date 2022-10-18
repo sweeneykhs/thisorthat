@@ -1,3 +1,4 @@
+from email.policy import default
 from secrets import choice
 
 from unicodedata import category
@@ -7,8 +8,11 @@ import datetime
 from django.contrib.auth.models import User
 from picklefield.fields import PickledObjectField
 import uuid
-
+from django.contrib.postgres.fields import ArrayField
 from requests import options 
+
+
+
 
 
 # Create your models here.
@@ -21,6 +25,7 @@ class clothes(models.Model):
 
 class userChoice(models.Model):
     choice=models.IntegerField()
+    saved=models.IntegerField(null=True)
     # user=models.ForeignKey(User, on_delete=CASCADE)
 
 
@@ -31,6 +36,7 @@ clothes_ = pd.DataFrame(list(clothes.objects.all().values()))
 name_=list(set(clothes_.subcategory_eng))
 # print(name_)
 
+
 class search_history(models.Model):
     theme=models.CharField(max_length=300)
     spec=models.CharField(max_length=300)
@@ -38,6 +44,7 @@ class search_history(models.Model):
     arguments=PickledObjectField(null=True)
     choice=models.IntegerField(null=True)
     options=PickledObjectField(null=True)
+    saved_for_later=ArrayField(models.CharField(max_length=300, blank=True),size=10, default=list, null=True)
     # id = models.BigIntegerField(primary_key=True)
     search_id = models.UUIDField( default=uuid.uuid4, editable=False, primary_key=True)
     def __str__(self):

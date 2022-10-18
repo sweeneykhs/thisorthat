@@ -207,7 +207,7 @@ def make_search(request, pk,  *args, **kwargs):
     #     counter+=1
     context = {'d1': ims[0], 'd2': ims[1], 'cat':cat, 'form':InputForm, 'pk':pk, 'df':search_df}
     # print(options.image_url[0])
-
+    
     if 'This' in request.POST:
         user_input=1
         search_all_info.choice=user_input
@@ -220,7 +220,21 @@ def make_search(request, pk,  *args, **kwargs):
         search_all_info.options=options
         search_all_info.save()
         return redirect('search', pk)
-    return render(request, 'table2.html', context)
+    elif 'saveThis' in request.POST:
+        user_input=1
+        search_all_info.choice=user_input
+        search_all_info.options=options
+        search_all_info.saved_for_later.append(ims[0])
+        search_all_info.save()
+        return redirect('search', pk)
+    elif 'saveThat' in request.POST:
+        user_input=2
+        search_all_info.choice=user_input
+        search_all_info.options=options
+        search_all_info.saved_for_later.append(ims[1])
+        search_all_info.save()
+        return redirect('search', pk)
+    return render(request, 'search1.html', context)
 
 
 def search_flow(request, pk, *args, **kwargs):
@@ -240,27 +254,41 @@ def search_flow(request, pk, *args, **kwargs):
     search_all_info.save()
     search_df=search_all_info.arguments
    
-    # scores=search_df.iloc[: , 1:]
+    # scores=search_df.iloc[: , 1:]Flanker27
     # scores=pd.to_numeric(scores[:,:])
     # best=scores.idxmax()
     # worst=scores.idxmin()
     context = {'d1': ims[0], 'd2': ims[1], 'cat':cat, 'form':InputForm, 'pk':pk, 'df':search_df}
     # print(options.image_url[0])
-
-    if 'Option 1' in request.POST:
-        user_input=1
-        return redirect('search', pk)
-    elif 'Option 2' in request.POST:
-        user_input=2
-        return redirect('search', pk)
-    return render(request, 'table2.html', context)
-    
-    
-    
-    
-    
-    
-    return
+    if 'saved_items' in request.POST:
+        saves=search_all_info.saved_for_later
+        context={'pk': pk, 'saves': saves}
+        return render(request, 'saved_items.html', context)
+    else:
+        if 'Option 1' in request.POST:
+            user_input=1
+            search_all_info.options=options
+            search_all_info.save()
+            return redirect('search', pk)
+        elif 'Option 2' in request.POST:
+            user_input=2
+            search_all_info.options=options
+            search_all_info.save()
+            return redirect('search', pk)
+        elif 'saveThis' in request.POST:
+            user_input=1
+            search_all_info.choice=user_input
+            search_all_info.options=options
+            search_all_info.saved_for_later.append(ims[0])
+            search_all_info.save()
+        elif 'saveThat' in request.POST:
+            user_input=2
+            search_all_info.choice=user_input
+            search_all_info.options=options
+            search_all_info.saved_for_later.append(ims[1])
+            search_all_info.save()
+        # print(search_all_info.saved_for_later)
+        return render(request, 'table2.html', context)
 
 
 def NewSearch(request):
@@ -317,3 +345,9 @@ def choosetheme(request):
           'form': form,
           'errors': errors,
    })
+
+def saved_items(request, pk, *args, **kwargs):
+    search_all_info=search_history.objects.get(search_id=pk)
+    saves=search_all_info.saved_for_later
+    context = {'pk':pk, 'saves':saves}
+    return render(request, 'saved_items.html', context)

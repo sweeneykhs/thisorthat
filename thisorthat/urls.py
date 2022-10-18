@@ -25,5 +25,6 @@ urlpatterns = [
     path('search/<str:pk>', views.search_flow, name='search'),
     path('new/', views.NewSearch, name='new'),
     path('index/', views.theme_test, name='index'),
+    path('saved/<str:pk>', views.saved_items, name='saved'),
     # path('index/', views.index, name='index'),
 ]
