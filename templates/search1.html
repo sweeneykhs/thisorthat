@@ -17,11 +17,25 @@
 <form method = "POST">
   <!-- {{df}} -->
   {% csrf_token %}
-
-  <button type="submit" name="This" value="Option 1"><img src={{d1}} alt="This"></button>
-  <button type="submit" name="saveThis" value="Option 1">Save This for Later</button>
-  <button type="submit" name="That" value="Option 2"><img src={{d2}} alt="That"></button>
-  <button type="submit" name="saveThat" value="Option 1">Save That for Later</button>
+  <table align="center">
+    <tr>
+      <td align="center">
+        <button type="submit" name="This" value="Option 1"><img src={{d1}} alt="This"></button>
+      </td>
+      <td align="center">
+        <button type="submit" name="That" value="Option 2"><img src={{d2}} alt="That"></button>
+      </td>
+    </tr>
+    <tr></tr>
+    <tr>
+      <td align="center">
+        <button type="submit" name="saveThis" value="Option 1">Save This for Later</button>
+      </td align="center">
+      <td align="center">
+        <button type="submit" name="saveThat" value="Option 1">Save That for Later</button>
+      </td>
+    </tr>
+  </table>
 </form>
 
 

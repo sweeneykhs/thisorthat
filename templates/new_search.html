@@ -1,16 +1,24 @@
 
 
 {% block content %}
-  <h2>New Search</h2>
+
+  <h1 align="centre" style="margin-left:auto;margin-right:auto;">New Search</h1>
   <form action="" method="post">
     {% csrf_token %}
-    <table>
-        {{ form.as_table }}
+    <table style="margin-left:auto;margin-right:auto;">
+       <tr>
+        <td align="centre" colspan=2>{{ form.as_p }} </td>
+       </tr> 
+        <tr>
+          <td align="centre" colspan=2>
+            <input type="submit" value="Submit">
+          </td>
+        </tr>
     </table>
     <!-- <h3>Options</h3>
     {% for i in cats %}
     {{i}}<br />
     {% endfor %} -->
-    <input type="submit" value="Submit">
+    
   </form>
 {% endblock %}
