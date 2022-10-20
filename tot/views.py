@@ -74,11 +74,11 @@ def explore_init(request, cat,cat_descr):
     cols=cat_descr[cat][2]
     init_value=5
     search_df=pd.DataFrame(columns=cols)
-    data=[2]*(len(cols))
+    data=[init_value]*(len(cols))
     search_df.loc[len(search_df)] = data
     return search_df
 
-def generate_options(request, cat,search_df,df):
+def generate_options(request, cat,search_df,df, pk):
 #     choice=1
     temp_df=df.loc[df.subcategory_eng==cat]
     temp_df['current_score']=temp_df['name_eng']
@@ -107,16 +107,16 @@ def generate_options(request, cat,search_df,df):
 #     for o in options_index:
 #         print(o)
     options=temp_df.loc[options_index]
-#     print(options)
+    search_all_info=search_history.objects.get(search_id=pk)
+    search_all_info.options=options
+    search_all_info.save
+    print('Generate Options', options)
+    for i in options.current_score:
+        print(i/total_weights)
     temp=[]
     temp2=[]
     for i in options.image_url:
         try:
-            # headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-            # response = requests.get(str(i), headers=headers)
-            # img = Image.open(BytesIO(response.content))
-            # img        
-            # temp.append(img)
             temp.append(i)
         except:
             pass
@@ -143,10 +143,11 @@ def make_choice(request, options, user_input, search_df):
         neg_choice=0
     else:
         neg_choice=1
+    # print(options)
     pos_words=options['name_eng'].values.flatten().tolist()[choice].split()
     neg_words=options['name_eng'].values.flatten().tolist()[neg_choice].split()
-    print(pos_words)
-    print(neg_words)
+    # print(pos_words)
+    # print(neg_words)
     search_df.loc[search_df.shape[0]] = [None]*len(search_df.columns)
     max_score=0
     max_limit=100000
@@ -162,19 +163,22 @@ def make_choice(request, options, user_input, search_df):
 #             print('yes')
         elif j in neg_words:
             if search_df[j][row-1]>1:
-                search_df[j][row]=pow(search_df[j][row-1], 0.5)
+                search_df[j][row]=pow(search_df[j][row-1], 0.75)
             else:
                 search_df[j][row]=search_df[j][row-1]/2
         else:
-            search_df[j][row]=pow(search_df[j][row-1], 1)
-        # total_score=total_score+search_df[j][row]
+            if search_df[j][row-1]>1:
+                search_df[j][row]=search_df[j][row-1]*1.5 
+            else:
+                search_df[j][row]=1        # total_score=total_score+search_df[j][row]
         if search_df[j][row]>max_score:
             max_score=search_df[j][row]
+            if max_score>max_limit:
+                print(j)
     if max_score>max_limit:
         for j in search_df.columns:
-            search_df[j][row]=search_df[j][row]/max_limit
-    for j in search_df.columns:
-        search_df[j][row]=search_df[j][row]/max_limit
+            # print(max_score)
+            search_df[j][row]=search_df[j][row]/1000
 
 #     print(search_df)
     return(search_df)
@@ -190,7 +194,7 @@ def make_search(request, pk,  *args, **kwargs):
     history=explore_init(request, cat, cat_descr)
 
 
-    ims, options, urls =generate_options(request, cat, history, df)
+    ims, options, urls =generate_options(request, cat, history, df, pk)
     # print(urls)
     
 
@@ -239,8 +243,9 @@ def make_search(request, pk,  *args, **kwargs):
 def search_flow(request, pk, *args, **kwargs):
     search_all_info=search_history.objects.get(search_id=pk)
     user_input=search_all_info.choice
-    print(user_input)
+    
     options=search_all_info.options
+    # print(options)
     history=search_all_info.arguments
     history=make_choice(request, options, user_input, history)
     
@@ -248,9 +253,10 @@ def search_flow(request, pk, *args, **kwargs):
     df, category_list=set_up(request, clothes)
     cat=search_all_info.category
     cat_descr=make_descr(request, category_list, df)
-    ims, options, urls =generate_options(request, cat, history, df)
+    ims, options, urls =generate_options(request, cat, history, df, pk)
     # print(urls)
     search_all_info.arguments=history
+    search_all_info.options=options
     search_all_info.save()
     search_df=search_all_info.arguments
     # print(search_all_info.saved_for_later_urls)
@@ -292,6 +298,7 @@ def search_flow(request, pk, *args, **kwargs):
             search_all_info.saved_for_later_urls.append(urls[1])
             search_all_info.save()
         # print(search_all_info.saved_for_later)
+        print(search_df)
         return render(request, 'table2.html', context)
 
 
