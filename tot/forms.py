@@ -28,7 +28,7 @@ specifics_=['Womens']
 # clothes = pd.DataFrame(list(clothes.objects.all().values()))
 # name_=list(set(clothes.subcategory_eng))
 
-class newSearchForm(forms.ModelForm):
+class newSearchForm_category(forms.ModelForm):
     iquery=clothes.objects.values_list("subcategory_eng", flat=True).distinct()
     iquery_choices=[('', 'None')] + [(id, id) for id in iquery]
     category=forms.ChoiceField(choices=iquery_choices,required=False, widget=forms.Select())
@@ -44,6 +44,31 @@ class newSearchForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-class theme_test(forms.Form):
-     themes = forms.ModelChoiceField(queryset=clothes.objects.all().order_by('theme'))
-    # days = forms.ModelChoiceField(queryset=clothes.objects.all().values())
+class newSearchForm_theme(forms.ModelForm):
+    iquery=clothes.objects.values_list("theme", flat=True).distinct()
+    iquery_choices=[('', 'None')] + [(id, id) for id in iquery]
+    theme=forms.ChoiceField(choices=iquery_choices,required=False, widget=forms.Select())
+    class Meta:
+        model = search_history
+        fields = ('theme',)
+        
+        # exclude=('arguments',)
+        # theme = forms.ModelChoiceField(label="theme", queryset=clothes.objects.all().values())
+    #     theme=forms.CharField(widget=forms.Select(choices=theme_))
+    #     specifics=forms.CharField(widget=forms.Select(choices=specifics_))
+    #     name=forms.CharField(widget=forms.Select(choices=name_))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+class newSearchForm_spec(forms.Form):
+
+    spec=forms.ModelChoiceField(queryset=search_history.objects.none())
+    # class Meta:
+    #     model = search_history
+    #     fields = ('spec',)
+        
+    def __init__(self, *args, **kwargs):
+        self.search_pk = kwargs.pop('pk')
+        super(newSearchForm_spec, self).__init__(*args, **kwargs)
+        search_theme=search_history.objects.get(search_id=self.search_pk).theme
+        self.fields['spec'].queryset = clothes.filter(theme=search_theme)

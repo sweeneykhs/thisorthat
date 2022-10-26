@@ -23,6 +23,10 @@ class clothes(models.Model):
     theme=models.CharField(("theme"), max_length=2000, null=True)
     spec=models.CharField(("spec"), max_length=2000, null=True)
     product_url=models.CharField(("product_url"), max_length=2000, null=True)
+    colour=models.CharField(("colour"), max_length=2000, null=True)
+    brand=models.CharField(("brand"), max_length=2000, null=True)
+    description=models.CharField(("description"), max_length=2000, null=True)
+
 
 class userChoice(models.Model):
     choice=models.IntegerField()
@@ -43,6 +47,8 @@ class search_history(models.Model):
     spec=models.CharField(max_length=300)
     category=models.CharField(max_length=300)
     arguments=PickledObjectField(null=True)
+    arguments_colour=PickledObjectField(null=True)
+    arguments_brand=PickledObjectField(null=True)
     choice=models.IntegerField(null=True)
     options=PickledObjectField(null=True)
     saved_for_later=ArrayField(models.CharField(max_length=300, blank=True),size=10, default=list, null=True)

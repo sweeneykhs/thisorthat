@@ -23,8 +23,8 @@ urlpatterns = [
     path('', views.NewSearch, name='new'),
     path('pls/<str:pk>', views.make_search, name='pls'),
     path('search/<str:pk>', views.search_flow, name='search'),
-    path('new/', views.NewSearch, name='new'),
-    path('index/', views.theme_test, name='index'),
+    path('new_theme/', views.NewSearch_theme, name='new_theme'),
+    path('new_spec/<pk>', views.NewSearch_spec, name='new_spec'),
     path('saved/<str:pk>', views.saved_items, name='saved'),
     # path('index/', views.index, name='index'),
 ]
