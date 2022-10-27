@@ -35,7 +35,7 @@ import random
 
 
 def table(request):
-    df = pd.DataFrame(list(clothes.objects.all().values()))
+    df = pd.DataFrame(list(clothes.objects.all().values()).iterator())
     geeks_object = df.to_html()
   
         # parsing the DataFrame in json format.
@@ -49,7 +49,7 @@ def table(request):
 
 
 def set_up(request,clothes):
-    clothes = pd.DataFrame(list(clothes.objects.all().values()))
+    clothes = pd.DataFrame(list(clothes.objects.all().values().iterator()))
     category_list=list(set(clothes.subcategory_eng))
 
     return clothes, category_list
@@ -77,7 +77,7 @@ def make_descr(request, category_list, df):
     return cat_descr
 
 def explore_init(request, cat,cat_descr):
-    all_data=pd.DataFrame(clothes.objects.all().values())
+    all_data=pd.DataFrame(clothes.objects.all().values().iterator())
     # print(all_data)
     cat_data=all_data.loc[all_data['subcategory_eng']==cat]
     # Makes the description DF
@@ -439,7 +439,7 @@ def NewSearch(request):
             context={'pk':search_history.search_id}
             return redirect('pls', search_history.search_id)
 
-    context={'form':form_class, 'cats':cats}
+    context={'form':form_class, 'cats':cats, 'df':df}
     return render(request, 'new_search.html', context)
 
 def NewSearch_theme(request):
