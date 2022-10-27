@@ -126,15 +126,39 @@ def generate_options(request, cat,search_df, colour_df, brand_df, df, pk):
 #     print(temp_df)
     df_index=list(temp_df.index)
     
-    for i in range(0,len(temp_df['current_score_brand'])):
-        temp_df['combined_score'][i]=temp_df['current_score'][i]+temp_df['current_score_colour'][i]+temp_df['current_score_brand'][i]
-    weights=temp_df['combined_score']
-    total_weights=sum((weights))
+    # for i in range(0,len(temp_df['current_score_brand'])):
+    #     temp_df['combined_score'][i]=temp_df['current_score'][i]+temp_df['current_score_colour'][i]+temp_df['current_score_brand'][i]
+    desc_weights=temp_df['current_score']
+    desc_total_weights=sum((desc_weights))
+    desc_balanced_weights=[]
+    for w in desc_weights:
+        desc_balanced_weights.append(w/desc_total_weights)
+    colour_weights=temp_df['current_score_colour']
+    colour_total_weights=sum((colour_weights))
+    colour_balanced_weights=[]
+    for w in colour_weights:
+        colour_balanced_weights.append(w/colour_total_weights)
+    brand_weights=temp_df['current_score_brand']
+    brand_total_weights=sum((brand_weights))
+    brand_balanced_weights=[]
+    for w in brand_weights:
+        brand_balanced_weights.append(w/brand_total_weights)
     balanced_weights=[]
-    for w in weights:
-        balanced_weights.append(w/total_weights)
+    brand_multiplier=0.1
+    for i in range(0, len(desc_balanced_weights)):
+        balanced_weights.append(desc_balanced_weights[i]+colour_balanced_weights[i]+(brand_balanced_weights[i]*brand_multiplier))
+    total_balanced_weights=sum(balanced_weights)
+    temp_df['combined_score']=balanced_weights
+    probs=[]
+    for i in balanced_weights:
+        # print(i, total_balanced_weights)
+        try:
+            probs.append(i/total_balanced_weights)
+        except:
+            probs.append(0)
+            print(i)
 #     print(len(df_index), len(weights))
-    options_index=np.random.choice(df_index, size=2, replace=False, p=balanced_weights)
+    options_index=np.random.choice(df_index, size=2, replace=False, p=probs)
     options=[]
 #     for o in options_index:
 #         print(o)
@@ -144,7 +168,10 @@ def generate_options(request, cat,search_df, colour_df, brand_df, df, pk):
     search_all_info.save
     print('Generate Options', options)
     for i in options.combined_score:
-        print(i/total_weights)
+        try:
+            print(i/total_balanced_weights)
+        except:
+            print(i)
     temp=[]
     temp2=[]
     for i in options.image_url:
