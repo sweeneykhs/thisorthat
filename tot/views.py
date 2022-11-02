@@ -302,7 +302,10 @@ def make_choice(request, options, user_input, search_df, colour_df, brand_df):
 def make_search(request, pk,  *args, **kwargs):
 
     pk=pk
-    df, category_list=set_up(request, clothes)
+    # df, category_list=set_up(request, clothes)
+    df= request.session.get('df')
+    category_list= request.session.get('cateogry_list')
+
     search_all_info=search_history.objects.get(search_id=pk)
     cat=search_all_info.category
     cat_descr=make_descr(request, category_list, df)
@@ -370,7 +373,9 @@ def search_flow(request, pk, *args, **kwargs):
     history, colour_df, brand_df=make_choice(request, options, user_input, history, colour_df, brand_df)
     print(history)
     pk=pk
-    df, category_list=set_up(request, clothes)
+    # df, category_list=set_up(request, clothes)
+    df= request.session.get('df')
+    category_list= request.session.get('cateogry_list')
     cat=search_all_info.category
     cat_descr=make_descr(request, category_list, df)
     ims, options, urls =generate_options(request, cat, history, colour_df, brand_df, df, pk)
@@ -427,7 +432,9 @@ def search_flow(request, pk, *args, **kwargs):
 def NewSearch(request):
     # model = search_history
     form_class = newSearchForm_category()
-    df, cats=set_up (request, clothes)
+    df, category_list=set_up (request, clothes)
+    request.session['df'] = df.to_json()
+    request.session['cats'] = category_list
 
     if request.method=='POST':
         form_class= newSearchForm_category(request.POST)
@@ -439,7 +446,7 @@ def NewSearch(request):
             context={'pk':search_history.search_id}
             return redirect('pls', search_history.search_id)
 
-    context={'form':form_class, 'cats':cats, 'df':df}
+    context={'form':form_class, 'cats':category_list, 'df':df}
     return render(request, 'new_search.html', context)
 
 def NewSearch_theme(request):
