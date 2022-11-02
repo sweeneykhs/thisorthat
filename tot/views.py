@@ -303,7 +303,7 @@ def make_search(request, pk,  *args, **kwargs):
 
     pk=pk
     # df, category_list=set_up(request, clothes)
-    df= request.session.get('df')
+    df= pd.read_json(request.session.get('df'))
     category_list= request.session.get('cateogry_list')
 
     search_all_info=search_history.objects.get(search_id=pk)
@@ -374,7 +374,7 @@ def search_flow(request, pk, *args, **kwargs):
     print(history)
     pk=pk
     # df, category_list=set_up(request, clothes)
-    df= request.session.get('df')
+    df= pd.read_json(request.session.get('df'))
     category_list= request.session.get('cateogry_list')
     cat=search_all_info.category
     cat_descr=make_descr(request, category_list, df)
