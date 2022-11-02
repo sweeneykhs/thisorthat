@@ -34,17 +34,17 @@ from numpy.random import choice
 import random
 
 
-def table(request):
-    df = pd.DataFrame(list(clothes.objects.all().values()).iterator())
-    geeks_object = df.to_html()
+# def table(request):
+#     df = pd.DataFrame(list(clothes.objects.all().values()).iterator())
+#     geeks_object = df.to_html()
   
-        # parsing the DataFrame in json format.
-    json_records = df.reset_index().to_json(orient ='records')
-    data = []
-    data = json.loads(json_records)
-    context = {'d': data}
+#         # parsing the DataFrame in json format.
+#     json_records = df.reset_index().to_json(orient ='records')
+#     data = []
+#     data = json.loads(json_records)
+#     context = {'d': data}
   
-    return render(request, 'table.html', context)
+#     return render(request, 'table.html', context)
 
 
 
@@ -56,9 +56,9 @@ def set_up(request,clothes):
 
 def unique_words(request, category, df):
     temp=[]
-    temp_df=df.loc[df.subcategory_eng==category]
+    # temp_df=df.loc[df.subcategory_eng==category]
     # print(temp_df)
-    for i in temp_df['description']:
+    for i in df['description']:
         try:
             for j in i.split(", "):
                 temp.append(j)
@@ -76,10 +76,10 @@ def make_descr(request, category_list, df):
         # print(cat_descr)
     return cat_descr
 
-def explore_init(request, cat,cat_descr):
-    all_data=pd.DataFrame(clothes.objects.all().values().iterator())
+def explore_init(request, cat,cat_descr, df):
+    # all_data=pd.DataFrame(clothes.objects.all().values().iterator())
     # print(all_data)
-    cat_data=all_data.loc[all_data['subcategory_eng']==cat]
+    # cat_data=all_data.loc[all_data['subcategory_eng']==cat]
     # Makes the description DF
     cols=cat_descr[cat][2]
     init_value=5
@@ -87,13 +87,13 @@ def explore_init(request, cat,cat_descr):
     data=[init_value]*(len(cols))
     search_df.loc[len(search_df)] = data
     # Makes the colour DF
-    colours=list(set(cat_data.colour))
+    colours=list(set(df.colour))
     init_value=5
     colour_df=pd.DataFrame(columns=colours)
     colour_data=[init_value]*(len(colours))
     colour_df.loc[len(colour_df)] = colour_data
     # Makes the colour DF
-    brands=list(set(cat_data.brand))
+    brands=list(set(df.brand))
     init_value=5
     brand_df=pd.DataFrame(columns=brands)
     brand_data=[init_value]*(len(brands))
@@ -104,12 +104,12 @@ def explore_init(request, cat,cat_descr):
 
 def generate_options(request, cat,search_df, colour_df, brand_df, df, pk):
 #     choice=1
-    temp_df=df.loc[df.subcategory_eng==cat]
-    temp_df['current_score']=temp_df['name_eng']
-    temp_df['current_score_colour']=temp_df['name_eng']
-    temp_df['current_score_brand']=temp_df['name_eng']
-    temp_df['combined_score']=temp_df['name_eng']
-    for index, row in temp_df.iterrows():
+    
+    df['current_score']=df['name_eng']
+    df['current_score_colour']=df['name_eng']
+    df['current_score_brand']=df['name_eng']
+    df['combined_score']=df['name_eng']
+    for index, row in df.iterrows():
         
         try:
             words=(row['description']).split(", ")
@@ -120,25 +120,25 @@ def generate_options(request, cat,search_df, colour_df, brand_df, df, pk):
                 at_score.append(search_df[word][len(search_df)-1])
         except:
             at_score=[0]
-        temp_df['current_score'][index]=statistics.mean(at_score)
-        temp_df['current_score_colour'][index]=colour_df[row['colour']][len(colour_df)-1]
-        temp_df['current_score_brand'][index]=brand_df[row['brand']][len(brand_df)-1]
+        df['current_score'][index]=statistics.mean(at_score)
+        df['current_score_colour'][index]=colour_df[row['colour']][len(colour_df)-1]
+        df['current_score_brand'][index]=brand_df[row['brand']][len(brand_df)-1]
 #     print(temp_df)
-    df_index=list(temp_df.index)
+    df_index=list(df.index)
     
     # for i in range(0,len(temp_df['current_score_brand'])):
     #     temp_df['combined_score'][i]=temp_df['current_score'][i]+temp_df['current_score_colour'][i]+temp_df['current_score_brand'][i]
-    desc_weights=temp_df['current_score']
+    desc_weights=df['current_score']
     desc_total_weights=sum((desc_weights))
     desc_balanced_weights=[]
     for w in desc_weights:
         desc_balanced_weights.append(w/desc_total_weights)
-    colour_weights=temp_df['current_score_colour']
+    colour_weights=df['current_score_colour']
     colour_total_weights=sum((colour_weights))
     colour_balanced_weights=[]
     for w in colour_weights:
         colour_balanced_weights.append(w/colour_total_weights)
-    brand_weights=temp_df['current_score_brand']
+    brand_weights=df['current_score_brand']
     brand_total_weights=sum((brand_weights))
     brand_balanced_weights=[]
     for w in brand_weights:
@@ -148,7 +148,7 @@ def generate_options(request, cat,search_df, colour_df, brand_df, df, pk):
     for i in range(0, len(desc_balanced_weights)):
         balanced_weights.append(desc_balanced_weights[i]+colour_balanced_weights[i]+(brand_balanced_weights[i]*brand_multiplier))
     total_balanced_weights=sum(balanced_weights)
-    temp_df['combined_score']=balanced_weights
+    df['combined_score']=balanced_weights
     probs=[]
     for i in balanced_weights:
         # print(i, total_balanced_weights)
@@ -162,7 +162,7 @@ def generate_options(request, cat,search_df, colour_df, brand_df, df, pk):
     options=[]
 #     for o in options_index:
 #         print(o)
-    options=temp_df.loc[options_index]
+    options=df.loc[options_index]
     search_all_info=search_history.objects.get(search_id=pk)
     search_all_info.options=options
     search_all_info.save
@@ -310,7 +310,7 @@ def make_search(request, pk,  *args, **kwargs):
     cat=search_all_info.category
     cat_descr=make_descr(request, category_list, df)
 
-    history, colour_df, brand_df=explore_init(request, cat, cat_descr)
+    history, colour_df, brand_df=explore_init(request, cat, cat_descr, df)
     # print(history)
 
     ims, options, urls =generate_options(request, cat, history, colour_df, brand_df, df, pk)
@@ -375,7 +375,7 @@ def search_flow(request, pk, *args, **kwargs):
     pk=pk
     # df, category_list=set_up(request, clothes)
     df=search_all_info.df
-    category_list= request.session.get('category_list')
+    # category_list= request.session.get('category_list')
     cat=search_all_info.category
     ims, options, urls =generate_options(request, cat, history, colour_df, brand_df, df, pk)
     # print(urls)
