@@ -219,7 +219,7 @@ def make_choice(request, options, user_input, search_df, colour_df, brand_df):
     brand_df.loc[brand_df.shape[0]] = [None]*len(brand_df.columns)
     colour_df.loc[colour_df.shape[0]] = [None]*len(colour_df.columns)
     max_score=0
-    max_limit=100000
+    max_limit=10000
     row = len(search_df)-1
 #         print(search_df)
     # print(search_df, brand_df)
@@ -244,7 +244,6 @@ def make_choice(request, options, user_input, search_df, colour_df, brand_df):
         for j in search_df.columns:
             # print(max_score)
             search_df[j][row]=search_df[j][row]/1000
-    test_df=search_df
     # print(search_df, '3')
 
     # This does the brands
@@ -303,10 +302,11 @@ def make_search(request, pk,  *args, **kwargs):
 
     pk=pk
     # df, category_list=set_up(request, clothes)
-    df= pd.read_json(request.session.get('df'))
-    category_list= request.session.get('cateogry_list')
+    # df= pd.read_json(request.session.get('df'))
+    category_list= request.session.get('category_list')
 
     search_all_info=search_history.objects.get(search_id=pk)
+    df=search_all_info.df
     cat=search_all_info.category
     cat_descr=make_descr(request, category_list, df)
 
@@ -374,10 +374,9 @@ def search_flow(request, pk, *args, **kwargs):
     print(history)
     pk=pk
     # df, category_list=set_up(request, clothes)
-    df= pd.read_json(request.session.get('df'))
-    category_list= request.session.get('cateogry_list')
+    df=search_all_info.df
+    category_list= request.session.get('category_list')
     cat=search_all_info.category
-    cat_descr=make_descr(request, category_list, df)
     ims, options, urls =generate_options(request, cat, history, colour_df, brand_df, df, pk)
     # print(urls)
     search_all_info.arguments=history
@@ -433,8 +432,8 @@ def NewSearch(request):
     # model = search_history
     form_class = newSearchForm_category()
     df, category_list=set_up (request, clothes)
-    request.session['df'] = df.to_json()
-    request.session['cats'] = category_list
+    # request.session['df'] = df.to_json()
+    request.session['category_list'] = category_list
 
     if request.method=='POST':
         form_class= newSearchForm_category(request.POST)
@@ -442,6 +441,8 @@ def NewSearch(request):
         # form_class.fields['category'].choices = [(category, category)]
         if form_class.is_valid():
             search_history=form_class.save(commit=False)
+            cat=search_history.category
+            search_history.df=df.loc[df.subcategory_eng==cat]
             search_history.save()
             context={'pk':search_history.search_id}
             return redirect('pls', search_history.search_id)
